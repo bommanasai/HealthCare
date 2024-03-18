@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 app = Flask(__name__)
 
@@ -19,8 +19,8 @@ X = data.drop(columns=['Medical Condition', 'Name'])
 y = data['Medical Condition']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-clf = RandomForestClassifier(n_estimators=100, random_state=42)
-clf.fit(X_train, y_train)
+lr=LogisticRegression()
+lr.fit(X_train, y_train)
 
 @app.route('/')
 def index():
@@ -36,7 +36,7 @@ def predict():
     gender_encoded = le.fit_transform([gender])[0]
     blood_group_encoded = le.fit_transform([blood_group])[0]
     
-    prediction = clf.predict([[gender_encoded, blood_group_encoded]])
+    prediction = lr.predict([[gender_encoded, blood_group_encoded]])
     save_to_csv(name, gender, blood_group)
     return render_template('result.html', name=name, prediction=prediction)
 
